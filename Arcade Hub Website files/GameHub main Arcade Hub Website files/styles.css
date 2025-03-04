@@ -123,3 +123,23 @@ DAMN MY CREATIVITY) */
   border-radius: 10px; 
   padding: 5px;
 }
+
+body {
+  filter: blur(.3px);
+}
+
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; 
+  background: repeating-linear-gradient(
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.2) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
