@@ -278,17 +278,26 @@ def draw_window(surface, grid, score=0, last_score = 0):
     pygame.font.init()
     font = pygame.font.SysFont('arial', 60)
     label = font.render('Tetris', 1, (0, 255, 0))
-
     surface.blit(label, (top_left_x + play_width / 2 - (label.get_width() / 2), 30))
+
+
 
     # current score
     font = pygame.font.SysFont('arial', 30)
     label = font.render('Score: ' + str(score), 1, (0,255,0))
-
     sx = top_left_x + play_width + 20
     sy = top_left_y + play_height/2 - 100
-
     surface.blit(label, (sx + 20, sy + 160))
+
+
+    # exit
+    font = pygame.font.SysFont('arial', 30)
+    label = font.render('ESC to Exit: ', 1, (0, 255, 0))
+    sx = top_left_x + play_width - 550
+    sy = top_left_y + play_height - 750
+    surface.blit(label, (sx + 20, sy + 160))
+
+
     # last score
     label = font.render('High Score: ' + last_score, 1, (0,255,0))
 
