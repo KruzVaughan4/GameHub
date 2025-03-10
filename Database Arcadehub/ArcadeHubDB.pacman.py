@@ -4,7 +4,7 @@ import math
 import sqlite3
 import sys
 
-# Get CURRENT_USER from command-line arguments.
+
 if len(sys.argv) > 1:
     CURRENT_USER = sys.argv[1]
 else:
@@ -42,7 +42,7 @@ def update_db_highscore():
         conn.commit()
     conn.close()
 
-# Ensure the table exists and that the CURRENT_USER record is created.
+
 create_table()
 ensure_user_exists(CURRENT_USER)
 
