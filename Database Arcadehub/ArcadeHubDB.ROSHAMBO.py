@@ -153,7 +153,7 @@ while running:
                 else:
                     player_choice = "Paper"
                 judgeGame(player_choice, ai_choice)
-                hiWins = get_db_roshambo()  # Refresh high score from database
+                hiWins = get_db_roshambo()  
     screen.blit(opponent, (WIDTH * 0.6, HEIGHT * 0.5))
     screen.blit(rock, (WIDTH * 0.25 - 3, HEIGHT * 0.4 + 5))
     screen.blit(scissors, (WIDTH * 0.25 - 3, HEIGHT * 0.6 + 5))
