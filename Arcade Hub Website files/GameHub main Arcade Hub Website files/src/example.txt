@@ -1,3 +1,0 @@
-I am an example file! Please KILL ME before downloading another one! 
-Eventually when we have a zip or package file with our game in it, 
-it will replace this file location in the directory.
