@@ -46,7 +46,7 @@ def message(msg, color):
 
 def launch_arcadehub():
     pygame.quit()
-    subprocess.run(["python", "arcadehub.base.py"])
+    subprocess.run(["python", "ArcadeHubDB.Base.py"])
     sys.exit()
 
 
