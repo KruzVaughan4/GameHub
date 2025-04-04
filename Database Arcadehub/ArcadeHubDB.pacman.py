@@ -1,50 +1,18 @@
 import pgzrun
 import random
 import math
-import sqlite3
+import pygame
+import os
 import sys
-
+import ArcadeHub_Database
 
 if len(sys.argv) > 1:
     CURRENT_USER = sys.argv[1]
 else:
-    CURRENT_USER = "player1"
+    CURRENT_USER = "Guest"
 
-def create_table():
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            user TEXT PRIMARY KEY,
-            pacman INTEGER DEFAULT 0
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-def ensure_user_exists(username):
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE user=?", (username,))
-    if cur.fetchone() is None:
-        cur.execute("INSERT INTO users (user, pacman) VALUES (?, ?)", (username, 0))
-        conn.commit()
-    conn.close()
-
-def update_db_highscore():
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT pacman FROM users WHERE user=?", (CURRENT_USER,))
-    result = cur.fetchone()
-    current_high = result[0] if result else 0
-    if pacman.score > current_high:
-        cur.execute("UPDATE users SET pacman=? WHERE user=?", (pacman.score, CURRENT_USER))
-        conn.commit()
-    conn.close()
-
-
-create_table()
-ensure_user_exists(CURRENT_USER)
+ArcadeHub_Database.create_table()
+ArcadeHub_Database.ensure_user_exists(CURRENT_USER)
 
 TEST_MODE = True
 speed = 2
@@ -79,6 +47,11 @@ char_to_image = {
 world = []
 ghosts = []
 game_over_flag = False
+
+def launch_arcadehub():
+    pygame.quit()
+    os.execv(sys.executable, [sys.executable, "ArcadeHub.Base.py", CURRENT_USER])
+
 
 def load_level(number):
     pacman.food_left = 0
@@ -187,9 +160,6 @@ def eat_food():
         pacman.score += 5
 
 def on_key_down(key):
-    if key == keys.ESCAPE:
-        update_db_highscore()
-        sys.exit()
     if key == keys.LEFT:
         pacman.dx = -speed
     if key == keys.RIGHT:
@@ -198,6 +168,9 @@ def on_key_down(key):
         pacman.dy = -speed
     if key == keys.DOWN:
         pacman.dy = speed
+    if key == keys.ESCAPE:
+        ArcadeHub_Database.update_high_score(CURRENT_USER, "pacman", pacman.score)
+        launch_arcadehub()
 
 def on_key_up(key):
     if key in (keys.LEFT, keys.RIGHT):
@@ -278,7 +251,6 @@ def game_over():
     global game_over_flag
     game_over_flag = True
     set_banner("", 0)
-    update_db_highscore()
 
 def update():
     if game_over_flag:
