@@ -1,9 +1,18 @@
 import pygame
 import random
-import subprocess
 import sys
-import sqlite3
+import os
+import ArcadeHub_Database
+
 pygame.init()
+
+if len(sys.argv) > 1:
+    CURRENT_USER = sys.argv[1]
+else:
+    CURRENT_USER = "Guest"
+
+ArcadeHub_Database.create_table()
+ArcadeHub_Database.ensure_user_exists(CURRENT_USER)
 
 white = (255, 255, 255)
 yellow = (255, 255, 102)
@@ -28,26 +37,21 @@ snake_speed = 15
 font_style = pygame.font.Font("assets/Daydream.ttf", 15)
 score_font = pygame.font.Font("assets/Daydream.ttf", 20)
 
-
 def Your_score(score):
     value = score_font.render("YOUR SCORE: " + str(score), True, yellow)
     dis.blit(value, [5, 5])
-
 
 def our_snake(snake_block, snake_list):
     for x in snake_list:
         pygame.draw.rect(dis, green, [x[0], x[1], snake_block, snake_block])
 
-
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width / 10, dis_height / 2])
 
-
 def launch_arcadehub():
     pygame.quit()
-    subprocess.run(["python", "arcadehub.base.py"])
-    sys.exit()
+    os.execv(sys.executable, [sys.executable, "ArcadeHub.Base.py", CURRENT_USER])
 
 
 def gameLoop():
@@ -75,7 +79,7 @@ def gameLoop():
             pygame.draw.rect(dis, white, [0, 0, dis_width, dis_height], 5)
             dis.blit(overlay, (0, 0))
             pygame.display.update()
-            update_score(Length_of_snake - 1)
+            ArcadeHub_Database.update_high_score(CURRENT_USER, "snake", (Length_of_snake - 1))
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -131,51 +135,5 @@ def gameLoop():
 
     pygame.quit()
     quit()
-
-
-if len(sys.argv) > 1:
-    CURRENT_USER = sys.argv[1]
-else:
-    CURRENT_USER = "player1"
-def create_table():
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            user TEXT PRIMARY KEY,
-            snake INTEGER DEFAULT 0
-        )
-    ''')
-    conn.commit()
-    conn.close()
-def ensure_user_exists(username):
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE user=?", (username,))
-    if cur.fetchone() is None:
-        cur.execute("INSERT INTO users (user, snake) VALUES (?, ?)", (username, 0))
-        conn.commit()
-    conn.close()
-def update_db_highscore(score):
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT snake FROM users WHERE user=?", (CURRENT_USER,))
-    result = cur.fetchone()
-    current_high = result[0] if result else 0
-    if score > current_high:
-        cur.execute("UPDATE users SET snake=? WHERE user=?", (score, CURRENT_USER))
-        conn.commit()
-    conn.close()
-def max_score_db():
-    conn = sqlite3.connect('arcade_users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT snake FROM users WHERE user=?", (CURRENT_USER,))
-    result = cur.fetchone()
-    conn.close()
-    return str(result[0]) if result else "0"
-create_table()
-ensure_user_exists(CURRENT_USER)
-update_score = update_db_highscore
-max_score = max_score_db
 
 gameLoop()
