@@ -232,7 +232,7 @@ def main():
             extra_draw.append((font.render(f"User: {selected_user}", True, (0, 0, 0)), (300, 30)))
 
             def play_game():
-                os.execv(sys.executable, [sys.executable, "ArcadeHub.Base.py", selected_user])
+                os.execv(sys.executable, [sys.executable, "ArcadeHubDB.Base.py", selected_user])
 
             def view_scores():
                 nonlocal current_state
