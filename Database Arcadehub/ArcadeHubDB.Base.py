@@ -67,13 +67,13 @@ while running:
     # Get key states
     keys = pygame.key.get_pressed()
     new_x, new_y = sprite_x, sprite_y
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_a]:
         new_x -= speed
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_d]:
         new_x += speed
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_w]:
         new_y -= speed
-    if keys[pygame.K_DOWN]:
+    if keys[pygame.K_s]:
         new_y += speed
 
     # Prevent moving out of bounds
