@@ -40,19 +40,19 @@ walls = [
 # Function to launch other games
 def launch_roshambo():
     pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHub.ROSHAMBO.py", CURRENT_USER])
+    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.ROSHAMBO.py", CURRENT_USER])
 
 def launch_tetris():
     pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHub.Tetris.py", CURRENT_USER])
+    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.Tetris.py", CURRENT_USER])
 
 def launch_snake():
     pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHub.Snake.py", CURRENT_USER])
+    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.Snake.py", CURRENT_USER])
 
 def launch_pacman():
     pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHub.pacman.py", CURRENT_USER])
+    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.pacman.py", CURRENT_USER])
 
 # Main loop
 running = True
