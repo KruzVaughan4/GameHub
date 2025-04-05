@@ -38,21 +38,10 @@ walls = [
 ]
 
 # Function to launch other games
-def launch_roshambo():
+def launch_game(game_name):
     pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.ROSHAMBO.py", CURRENT_USER])
+    os.execv(sys.executable, [sys.executable, f"ArcadeHubDB.{game_name}.py", CURRENT_USER])
 
-def launch_tetris():
-    pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.Tetris.py", CURRENT_USER])
-
-def launch_snake():
-    pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.Snake.py", CURRENT_USER])
-
-def launch_pacman():
-    pygame.quit()
-    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.pacman.py", CURRENT_USER])
 
 # Main loop
 running = True
@@ -85,13 +74,13 @@ while running:
     if not any(sprite_rect.colliderect(wall) for wall in walls):
         sprite_x, sprite_y = new_x, new_y
     if sprite_y >= HEIGHT - sprite.get_height() and 350 < sprite_x < 460:
-        launch_roshambo()
+        launch_game("ROSHAMBO")
     if sprite_x <= 10 and 200 < sprite_y < 400: #tetris
-        launch_tetris()
+        launch_game("Tetris")
     if sprite_y <= 10 and 250 < sprite_x < 550:#snake
-        launch_snake()
+        launch_game("Snake")
     if sprite_x >= ah_width - sprite.get_width() - 10 and 200 < sprite_y < 400:#pacman
-        launch_pacman()
+        launch_game("pacman")
 
 
     # Draw everything
