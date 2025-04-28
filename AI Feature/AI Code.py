@@ -3,7 +3,7 @@
 
 # Attached is the version of the arcade hub I implemented this function
 # into. Each item is blocked off by '# AI' so you can just ctrl f and 
-# search for it. Blow are instructions or you can just look at the 
+# search for it. Below are instructions or you can just look at the 
 # arcade hub version and see where I put things.
 
 
