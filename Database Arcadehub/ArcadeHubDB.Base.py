@@ -54,22 +54,22 @@ walls = [
 # Define game launch zones as a dictionary
 game_zones = {
     "roshambo": {
-        "rect": pygame.Rect(217, 55, 50, 50),
+        "rect": pygame.Rect(195, 55, 50, 50),
         "game_file": "ArcadeHubDB.ROSHAMBO.py",
         "test_command": [sys.executable, "ArcadeHubDB.ROSHAMBO.py", CURRENT_USER]
     },
     "tetris": {
-        "rect": pygame.Rect(0, 200, 10, 200),
+        "rect": pygame.Rect(556, 55, 50, 50),
         "game_file": "ArcadeHubDB.Tetris.py",
         "test_command": [sys.executable, "ArcadeHubDB.Tetris.py", CURRENT_USER]
     },
     "snake": {
-        "rect": pygame.Rect(250, 0, 300, 10),
+        "rect": pygame.Rect(680, 55, 50, 50),
         "game_file": "ArcadeHubDB.Snake.py",
         "test_command": [sys.executable, "ArcadeHubDB.Snake.py", CURRENT_USER]
     },
     "pacman": {
-        "rect": pygame.Rect(WIDTH - 10, 200, 10, 200),
+        "rect": pygame.Rect(70, 55, 50, 50),
         "game_file": "ArcadeHubDB.pacman.py",
         "test_command": [sys.executable, "ArcadeHubDB.pacman.py", CURRENT_USER]
     }
@@ -102,49 +102,7 @@ def launch_game(game_file, test_command):
     try:
         # First try the standard method
         pygame.quit()
-        time.sleep(0.2)  # Ensure pygame fully quits
-
-        # Method 1: Standard Popen with new process group
-        try:
-            if platform.system() == "Windows":
-                subprocess.Popen(test_command,
-                                 creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
-                                 shell=True)
-            else:
-                subprocess.Popen(test_command,
-                                 start_new_session=True)
-            print("Launched using standard method")
-            sys.exit()
-        except Exception as e:
-            print(f"Standard launch failed: {e}")
-
-        # Method 2: Alternative Windows method
-        if platform.system() == "Windows":
-            try:
-                subprocess.Popen(['start', 'cmd', '/k'] + test_command, shell=True)
-                print("Launched using Windows cmd method")
-                sys.exit()
-            except Exception as e:
-                print(f"Windows cmd method failed: {e}")
-
-        # Method 3: Direct system call
-        try:
-            if platform.system() == "Windows":
-                os.system(f'start "" "{sys.executable}" "{game_file}" "{CURRENT_USER}"')
-            else:
-                os.system(f'"{sys.executable}" "{game_file}" "{CURRENT_USER}" &')
-            print("Launched using system call")
-            sys.exit()
-        except Exception as e:
-            print(f"System call failed: {e}")
-
-        # If all else fails, try running directly
-        try:
-            os.execv(sys.executable, ['python'] + test_command[1:])
-            print("Launched using execv")
-        except Exception as e:
-            print(f"Execv failed: {e}")
-            raise
+        os.execv(sys.executable, test_command)
 
     except Exception as e:
         print(f"CRITICAL: All launch methods failed: {e}")
