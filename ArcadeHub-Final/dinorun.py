@@ -112,7 +112,7 @@ class Cactus:
 
 def launch_left_base():
     pygame.quit()
-    os.system("python ArcadeHub.LeftBase.py")
+    os.system("python ArcadeHubDB.LeftBase.py")
     sys.exit()
 
 def main():
