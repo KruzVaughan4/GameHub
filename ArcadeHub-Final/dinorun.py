@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import sys  # <-- Import sys to exit properly if needed
 
 # Initialize pygame
 pygame.init()
@@ -109,6 +110,11 @@ class Cactus:
             pygame.Rect(dino.x, dino.y, 50, 50))
 
 
+def launch_left_base():
+    pygame.quit()
+    os.system("python ArcadeHub.LeftBase.py")
+    sys.exit()
+
 def main():
     high_score = read_high_score()  # Load the highest score
 
@@ -125,8 +131,11 @@ def main():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    waiting = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        waiting = False
+                    elif event.key == pygame.K_ESCAPE:
+                        launch_left_base()
 
         dino = Dinosaur()
         dino.running = True
@@ -147,6 +156,8 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         dino.jump()
+                    elif event.key == pygame.K_ESCAPE:
+                        launch_left_base()
 
             dino.update()
             dino.draw(screen)
@@ -200,9 +211,8 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         waiting = False
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        return
+                    elif event.key == pygame.K_ESCAPE:
+                        launch_left_base()
 
 
 if __name__ == "__main__":
