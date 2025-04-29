@@ -66,6 +66,11 @@ game_zones = {
         "game_file": "ArcadeHubDB.Tetris.py",
         "test_command": [sys.executable, "ArcadeHubDB.Tetris.py", CURRENT_USER]
     },
+    "left_block": {
+        "rect": pygame.Rect(0, 267, 8, 65),
+        "game_file": "ArcadeHubDB.LeftBase.py",
+        "test_command": [sys.executable, "ArcadeHubDB.LeftBase.py", CURRENT_USER]
+    },
     "snake": {
         "rect": pygame.Rect(680, 55, 50, 50),
         "game_file": "ArcadeHubDB.Snake.py",
@@ -219,8 +224,8 @@ while running:
         line_height = 30
         total_text_height = len(lines) * line_height
 
-        start_y = 20
-        start_x = WIDTH - max_text_width - 20
+        start_y = HEIGHT - (len(lines) * line_height) - 20
+        start_x = 5
 
         for i, line in enumerate(lines):
             # Outline
@@ -234,7 +239,8 @@ while running:
             line_surface = font.render(line, True, (0, 0, 0))
             win.blit(line_surface, (start_x, start_y + (i * line_height)))
     else:
-        win.blit(tab_image, (WIDTH - tab_image.get_width() - 20, 20))
+        win.blit(tab_image, (20, HEIGHT - tab_image.get_height() - 20))
+
 
     pygame.display.update()
 
