@@ -4,6 +4,7 @@ import sys
 import subprocess
 import time
 import platform
+import random  # AI - Added for fun facts
 
 # Get user login name
 if len(sys.argv) > 1:
@@ -27,6 +28,8 @@ try:
     sprite = pygame.transform.scale(sprite, (50, 50))
     background = pygame.image.load("ArcadeHubB2.png")
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+    tab_image = pygame.image.load("Images/tab_key.jpg")  # AI - Load tab image
+    tab_image = pygame.transform.scale(tab_image, (50, 50))
 except Exception as e:
     print(f"Error loading assets: {e}")
     input("Press Enter to exit...")
@@ -75,7 +78,19 @@ game_zones = {
     }
 }
 
+# AI - Load fun facts
+def load_fun_facts(filename="Images/fun_facts.txt"):
+    with open(filename, "r") as f:
+        facts = f.readlines()
+    return [fact.strip() for fact in facts if fact.strip()]
 
+# Initialize fun facts
+show_fun_fact = False
+fun_facts = load_fun_facts()
+current_fun_fact = ""
+tab_pressed = False
+
+# Verify all game files exist before starting
 def verify_game_files():
     """Check if all game files exist before running"""
     missing_files = []
@@ -91,7 +106,7 @@ def verify_game_files():
         return False
     return True
 
-
+# Launch a game
 def launch_game(game_file, test_command):
     """Ultimate game launching function with all possible fixes"""
     print(f"\n=== Launching {game_file} ===")
@@ -111,7 +126,16 @@ def launch_game(game_file, test_command):
         subprocess.Popen([sys.executable, hub_path, CURRENT_USER])
         sys.exit()
 
+# AI - Toggle fun fact
+def toggle_fun_fact():
+    global show_fun_fact, current_fun_fact
+    if show_fun_fact:
+        show_fun_fact = False
+    else:
+        current_fun_fact = random.choice(fun_facts)
+        show_fun_fact = True
 
+# Check if sprite entered any game zone
 def check_game_zones(sprite_rect):
     """Check if sprite is in any game launch zone"""
     for zone_name, zone_data in game_zones.items():
@@ -119,8 +143,9 @@ def check_game_zones(sprite_rect):
             print(f"\nEntering {zone_name} game...")
             launch_game(zone_data["game_file"], zone_data["test_command"])
 
+# Load font for rendering fun facts
+font = pygame.font.SysFont('Arial', 20)
 
-# Verify all game files exist before starting
 if not verify_game_files():
     input("Press Enter to exit...")
     sys.exit(1)
@@ -132,6 +157,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        # AI - Handle tab press
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_TAB and not tab_pressed:
+                toggle_fun_fact()
+                tab_pressed = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_TAB:
+                tab_pressed = False
 
     keys = pygame.key.get_pressed()
     new_x, new_y = sprite_x, sprite_y
@@ -163,6 +197,45 @@ while running:
     # Draw everything
     win.blit(background, (0, 0))
     win.blit(sprite, (sprite_x, sprite_y))
+
+    # AI - Fun fact display
+    if show_fun_fact:
+        fun_fact_text = current_fun_fact
+        max_text_width = 400
+        lines = []
+        current_line = ""
+        words = fun_fact_text.split()
+
+        for word in words:
+            if font.size(current_line + " " + word)[0] <= max_text_width:
+                current_line += " " + word
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+
+        line_height = 30
+        total_text_height = len(lines) * line_height
+
+        start_y = 20
+        start_x = WIDTH - max_text_width - 20
+
+        for i, line in enumerate(lines):
+            # Outline
+            outline_surface = font.render(line, True, (255, 255, 255))
+            win.blit(outline_surface, (start_x - 2, start_y + (i * line_height) - 2))
+            win.blit(outline_surface, (start_x + 2, start_y + (i * line_height) - 2))
+            win.blit(outline_surface, (start_x - 2, start_y + (i * line_height) + 2))
+            win.blit(outline_surface, (start_x + 2, start_y + (i * line_height) + 2))
+
+            # Text
+            line_surface = font.render(line, True, (0, 0, 0))
+            win.blit(line_surface, (start_x, start_y + (i * line_height)))
+    else:
+        win.blit(tab_image, (WIDTH - tab_image.get_width() - 20, 20))
+
     pygame.display.update()
 
 pygame.quit()
