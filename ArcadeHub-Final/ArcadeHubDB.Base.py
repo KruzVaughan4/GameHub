@@ -20,7 +20,7 @@ pygame.init()
 # Set up display
 WIDTH, HEIGHT = 800, 600
 win = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Arcade Hub B2")
+pygame.display.set_caption("Arcade Hub Main Base")
 
 # Load assets
 try:
@@ -57,12 +57,12 @@ walls = [
 # Define game launch zones as a dictionary
 game_zones = {
     "roshambo": {
-        "rect": pygame.Rect(195, 55, 50, 50),
+        "rect": pygame.Rect(195, 55, 51, 63),
         "game_file": "ArcadeHubDB.ROSHAMBO.py",
         "test_command": [sys.executable, "ArcadeHubDB.ROSHAMBO.py", CURRENT_USER]
     },
     "tetris": {
-        "rect": pygame.Rect(556, 55, 50, 50),
+        "rect": pygame.Rect(556, 55, 51, 63),
         "game_file": "ArcadeHubDB.Tetris.py",
         "test_command": [sys.executable, "ArcadeHubDB.Tetris.py", CURRENT_USER]
     },
@@ -72,12 +72,12 @@ game_zones = {
         "test_command": [sys.executable, "ArcadeHubDB.LeftBase.py", CURRENT_USER]
     },
     "snake": {
-        "rect": pygame.Rect(680, 55, 50, 50),
+        "rect": pygame.Rect(680, 55, 51, 63),
         "game_file": "ArcadeHubDB.Snake.py",
         "test_command": [sys.executable, "ArcadeHubDB.Snake.py", CURRENT_USER]
     },
     "pacman": {
-        "rect": pygame.Rect(70, 55, 50, 50),
+        "rect": pygame.Rect(70, 55, 51, 63),
         "game_file": "ArcadeHubDB.pacman.py",
         "test_command": [sys.executable, "ArcadeHubDB.pacman.py", CURRENT_USER]
     }
@@ -225,7 +225,7 @@ while running:
         total_text_height = len(lines) * line_height
 
         start_y = HEIGHT - (len(lines) * line_height) - 20
-        start_x = 5
+        start_x = 20
 
         for i, line in enumerate(lines):
             # Outline
