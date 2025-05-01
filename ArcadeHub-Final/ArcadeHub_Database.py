@@ -3,7 +3,7 @@ import sys
 import sqlite3
 import os
 
-DB_NAME = 'arcade_users.db'
+DB_NAME = 'arcade_users_Final.db'
 
 def create_table():
     conn = sqlite3.connect(DB_NAME)
@@ -12,9 +12,10 @@ def create_table():
         CREATE TABLE IF NOT EXISTS users (
             user TEXT PRIMARY KEY,
             roshambo INTEGER DEFAULT 0,
-            tetris INTEGER DEFAULT 0,
-            snake INTEGER DEFAULT 0,
-            pacman INTEGER DEFAULT 0
+            tetris   INTEGER DEFAULT 0,
+            snake    INTEGER DEFAULT 0,
+            pacman   INTEGER DEFAULT 0,
+            dino     INTEGER DEFAULT 0
         )
     ''')
     conn.commit()
@@ -57,7 +58,8 @@ def get_high_score(user, game):
 def get_all_users():
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
-    cur.execute('SELECT user, roshambo, tetris, snake, pacman FROM users')
+    # include dino in the SELECT
+    cur.execute('SELECT user, roshambo, tetris, snake, pacman, dino FROM users')
     users = cur.fetchall()
     conn.close()
     return users
@@ -67,12 +69,16 @@ def ensure_user_exists(username):
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE user=?", (username,))
     if cur.fetchone() is None:
+        # insert dino with default 0 as well
         cur.execute(
-            "INSERT INTO users (user, roshambo, tetris, snake, pacman) VALUES (?, 0, 0, 0, 0)",
+            "INSERT INTO users (user, roshambo, tetris, snake, pacman, dino) VALUES (?, 0, 0, 0, 0, 0)",
             (username,)
         )
         conn.commit()
     conn.close()
+
+background_image = pygame.image.load('Images/parchment.png')
+background_image = pygame.transform.scale(background_image, (800, 600))
 
 
 class Button:
@@ -82,12 +88,13 @@ class Button:
         self.action = action
         self.font = font
         self.bg_color = (200, 200, 200)
-        self.text_color = (0, 0, 0)
+        self.text_color = (255, 255, 255)
 
     def draw(self, surface, selected=False):
-        color = (150, 150, 250) if selected else self.bg_color
-        pygame.draw.rect(surface, color, self.rect)
-        pygame.draw.rect(surface, (0, 0, 0), self.rect, 2)
+        base_color = (139, 69, 19) if not selected else (205, 133, 63)
+        pygame.draw.rect(surface, base_color, self.rect, border_radius=10)  # rounded corners
+        pygame.draw.rect(surface, (139,69,19), self.rect, 3, border_radius=10)
+
         text_surface = self.font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect(center=self.rect.center)
         surface.blit(text_surface, text_rect)
@@ -101,8 +108,8 @@ def main():
     win = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("Arcade Hub Menu")
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 36)
-    small_font = pygame.font.Font(None, 28)
+    font = pygame.font.Font('Images/MedievalSharp.ttf', 30)
+    small_font = pygame.font.Font('Images/MedievalSharp.ttf', 18)
 
     create_table()
 
@@ -123,7 +130,7 @@ def main():
         extra_draw = []
 
         if current_state == "main_menu":
-            extra_draw.append((font.render("Main Menu", True, (0, 0, 0)), (300, 30)))
+            extra_draw.append((font.render("Main Menu", True, (255,255,255)), (300, 30)))
 
             def goto_create_user():
                 nonlocal current_state, input_text, message
@@ -148,17 +155,18 @@ def main():
                 Button((300, 310, 200, 50), "Exit", lambda: sys.exit(), font)
             ]
 
-            extra_draw.append((small_font.render("Users:", True, (0, 0, 0)), (50, 100)))
+            extra_draw.append((small_font.render("Users:", True, (255,255,255)), (50, 100)))
             users = get_all_users()
             y_offset = 130
-            for user, r, t, s, p in users:
-                extra_draw.append(
-                    (small_font.render(f"{user} | R:{r} T:{t} S:{s} P:{p}", True, (0, 0, 0)), (50, y_offset)))
+            # unpack the extra dino score
+            for user, r, t, s, p, d in users:
+                line = f"{user} | R:{r} T:{t} S:{s} P:{p} D:{d}"
+                extra_draw.append((small_font.render(line, True, (255,255,255)), (50, y_offset)))
                 y_offset += 25
 
         elif current_state == "create_user":
-            extra_draw.append((font.render("Create User", True, (0, 0, 0)), (300, 30)))
-            extra_draw.append((small_font.render("Enter username:", True, (0, 0, 0)), (200, 100)))
+            extra_draw.append((font.render("Create User", True, (255,255,255)), (300, 30)))
+            extra_draw.append((small_font.render("Enter username:", True, (255,255,255)), (200, 100)))
 
             def confirm_create():
                 nonlocal input_text, current_state, message
@@ -181,15 +189,16 @@ def main():
                 extra_draw.append((small_font.render(message, True, (0, 100, 0)), (200, 300)))
 
         elif current_state == "delete_user":
-            extra_draw.append((font.render("Delete User", True, (0, 0, 0)), (300, 30)))
+            extra_draw.append((font.render("Delete User", True, (255,255,255)), (300, 30)))
             users = get_all_users()
             btn_y = 100
             btn_list = []
-            for (user, r, t, s, p) in users:
+            for (user, r, t, s, p, d) in users:
                 def make_delete_action(u):
                     return lambda: delete_user_db(u)
+                label = f"{user} | R:{r} T:{t} S:{s} P:{p} D:{d}"
                 btn_list.append(
-                    Button((250, btn_y, 300, 40), f"{user} | R:{r} T:{t} S:{s} P:{p}",
+                    Button((250, btn_y, 300, 40), label,
                            make_delete_action(user), small_font))
                 btn_y += 50
 
@@ -199,10 +208,10 @@ def main():
 
             btn_list.append(Button((300, 450, 200, 50), "Back", back_to_main, font))
             current_buttons = btn_list
-            extra_draw.append((small_font.render("Use arrows then Enter to delete user.", True, (0, 0, 0)), (250, 70)))
+            extra_draw.append((small_font.render("Use arrows then Enter to delete user.", True, (255,255,255)), (250, 70)))
 
         elif current_state == "select_user":
-            extra_draw.append((font.render("Select User", True, (0, 0, 0)), (300, 30)))
+            extra_draw.append((font.render("Select User", True, (255,255,255)), (300, 30)))
             users = get_all_users()
             btn_list = []
             btn_y = 100
@@ -212,11 +221,12 @@ def main():
                 selected_user = u
                 current_state = "user_menu"
 
-            for (user, r, t, s, p) in users:
+            for (user, r, t, s, p, d) in users:
                 def make_select_action(u):
                     return lambda: select_user(u)
+                label = f"{user} | R:{r} T:{t} S:{s} P:{p} D:{d}"
                 btn_list.append(
-                    Button((250, btn_y, 300, 40), f"{user} | R:{r} T:{t} S:{s} P:{p}",
+                    Button((250, btn_y, 300, 40), label,
                            make_select_action(user), small_font))
                 btn_y += 50
 
@@ -226,10 +236,10 @@ def main():
 
             btn_list.append(Button((300, 450, 200, 50), "Back", back_to_main, font))
             current_buttons = btn_list
-            extra_draw.append((small_font.render("Use arrows then Enter to select user.", True, (0, 0, 0)), (250, 70)))
+            extra_draw.append((small_font.render("Use arrows then Enter to select user.", True, (255,255,255)), (250, 70)))
 
         elif current_state == "user_menu":
-            extra_draw.append((font.render(f"User: {selected_user}", True, (0, 0, 0)), (300, 30)))
+            extra_draw.append((font.render(f"User: {selected_user}", True, (255,255,255)), (300, 30)))
 
             def play_game():
                 os.execv(sys.executable, [sys.executable, "ArcadeHubDB.Base.py", selected_user])
@@ -252,12 +262,12 @@ def main():
         elif current_state == "view_high_score":
             scores = get_all_users()
             score_text = "No scores found."
-            for user, r, t, s, p in scores:
+            for user, r, t, s, p, d in scores:
                 if user == selected_user:
-                    score_text = f"R:{r} T:{t} S:{s} P:{p}"
+                    score_text = f"R:{r} T:{t} S:{s} P:{p} D:{d}"
                     break
-            extra_draw.append((font.render(f"{selected_user} Scores", True, (0, 0, 0)), (280, 30)))
-            extra_draw.append((font.render(score_text, True, (0, 0, 0)), (300, 150)))
+            extra_draw.append((font.render(f"{selected_user} Scores", True, (255,255,255)), (280, 30)))
+            extra_draw.append((font.render(score_text, True, (255,255,255)), (300, 150)))
 
             def back_to_user_menu():
                 nonlocal current_state
@@ -265,6 +275,7 @@ def main():
 
             current_buttons = [Button((350, 300, 100, 50), "Back", back_to_user_menu, font)]
 
+        # (event-handling, drawing, etc., remains unchanged)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -288,14 +299,14 @@ def main():
                     elif event.key == pygame.K_RETURN and current_buttons:
                         current_buttons[selected_button_index].action()
 
-        win.fill((255, 255, 255))
+        win.blit(background_image, (0, 0))
         for surf, pos in extra_draw:
             win.blit(surf, pos)
         if current_state == "create_user":
             input_box = pygame.Rect(200, 140, 400, 40)
             pygame.draw.rect(win, (230, 230, 230), input_box)
-            pygame.draw.rect(win, (0, 0, 0), input_box, 2)
-            text_surface = font.render(input_text, True, (0, 0, 0))
+            pygame.draw.rect(win, (255,255,255), input_box, 2)
+            text_surface = font.render(input_text, True, (255,255,255))
             win.blit(text_surface, (input_box.x + 5, input_box.y + 5))
         for i, btn in enumerate(current_buttons):
             btn.draw(win, selected=(i == selected_button_index))
