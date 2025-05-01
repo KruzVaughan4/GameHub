@@ -2,13 +2,16 @@ import pygame
 import random
 import os
 import sys  # <-- Import sys to exit properly if needed
+import ArcadeHub_Database
+
 
 if len(sys.argv) > 1:
     CURRENT_USER = sys.argv[1]
 else:
     CURRENT_USER = "Guest"
 
-
+ArcadeHub_Database.create_table()
+ArcadeHub_Database.ensure_user_exists(CURRENT_USER)
 
 # Initialize pygame
 pygame.init()
@@ -47,18 +50,11 @@ font = pygame.font.SysFont(None, 36)
 
 # Function to read the highest score from scores.txt
 def read_high_score():
-    if os.path.exists("scores.txt"):
-        with open("scores.txt", "r") as file:
-            try:
-                return int(file.read().strip())  # Read and convert to int
-            except ValueError:
-                return 0  # Default if file is empty or invalid
-    return 0  # Default if file doesn't exist
+    return ArcadeHub_Database.get_high_score(CURRENT_USER, 'dino')
 
 # Function to write a new highest score
 def write_high_score(score):
-    with open("scores.txt", "w") as file:
-        file.write(str(score))
+    ArcadeHub_Database.update_high_score(CURRENT_USER, 'dino', score)
 
 class Dinosaur:
     def __init__(self):
