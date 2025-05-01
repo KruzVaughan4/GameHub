@@ -3,6 +3,13 @@ import random
 import os
 import sys  # <-- Import sys to exit properly if needed
 
+if len(sys.argv) > 1:
+    CURRENT_USER = sys.argv[1]
+else:
+    CURRENT_USER = "Guest"
+
+
+
 # Initialize pygame
 pygame.init()
 
@@ -112,8 +119,7 @@ class Cactus:
 
 def launch_left_base():
     pygame.quit()
-    os.system("python ArcadeHubDB.LeftBase.py")
-    sys.exit()
+    os.execv(sys.executable, [sys.executable, "ArcadeHubDB.LeftBase.py", CURRENT_USER])
 
 def main():
     high_score = read_high_score()  # Load the highest score
