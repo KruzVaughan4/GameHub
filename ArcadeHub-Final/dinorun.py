@@ -26,7 +26,7 @@ CENTER_Y = HEIGHT // 2  # Center the game elements
 SPEED_INCREMENT = 0.5  # Speed increase per 15 points
 
 # Asset paths
-ASSET_DIR = "assets"
+ASSET_DIR = os.path.join("Images")
 DINO_START_IMG = pygame.image.load(os.path.join(ASSET_DIR, "dinoStart.png"))
 DINO_RUN_IMGS = [
     pygame.image.load(os.path.join(ASSET_DIR, "dinoRun1.png")),
